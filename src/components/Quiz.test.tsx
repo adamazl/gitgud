@@ -86,4 +86,24 @@ describe("Quiz", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
     expect(screen.queryByRole("radio")).not.toBeInTheDocument();
   });
+
+  it("shuffles option order while still scoring against the original correct option", async () => {
+    // Math.random() = 0 makes Fisher-Yates rotate [a, b, c] to [b, c, a].
+    const random = vi.spyOn(Math, "random").mockReturnValue(0);
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(
+      <Quiz
+        questions={[{ question: "Q?", options: ["a", "b", "c"], correctIndex: 0, explanation: "a." }]}
+        onComplete={onComplete}
+      />,
+    );
+    random.mockRestore();
+
+    expect(screen.getAllByText(/^[abc]$/).map((label) => label.textContent)).toEqual(["b", "c", "a"]);
+
+    await user.click(screen.getByRole("radio", { name: "a" }));
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+    expect(screen.getByText("Correct!")).toBeInTheDocument();
+  });
 });

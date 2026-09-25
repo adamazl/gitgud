@@ -11,12 +11,25 @@ interface QuizProps {
   onComplete: (score: number) => void;
 }
 
+/** Fisher-Yates shuffle of `[0, 1, ..., length - 1]`. */
+function shuffledIndices(length: number): number[] {
+  const order = Array.from({ length }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
 export function Quiz({ questions, onComplete }: QuizProps) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  // Randomise option order once per mount so the answer isn't always in the
+  // same position. `selected` still holds the original option index.
+  const [optionOrders] = useState(() => questions.map((q) => shuffledIndices(q.options.length)));
 
   const question = questions[index];
   const isCorrect = submitted && selected === question.correctIndex;
@@ -65,10 +78,10 @@ export function Quiz({ questions, onComplete }: QuizProps) {
         value={String(selected ?? "")}
         onValueChange={(v) => !submitted && setSelected(Number(v))}
       >
-        {question.options.map((option, i) => (
-          <div key={option} className="flex items-center space-x-2">
+        {optionOrders[index].map((i) => (
+          <div key={question.options[i]} className="flex items-center space-x-2">
             <RadioGroupItem value={String(i)} id={`option-${i}`} disabled={submitted} />
-            <Label htmlFor={`option-${i}`}>{option}</Label>
+            <Label htmlFor={`option-${i}`}>{question.options[i]}</Label>
           </div>
         ))}
       </RadioGroup>
