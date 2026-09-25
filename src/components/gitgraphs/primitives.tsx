@@ -4,11 +4,14 @@ export interface GraphNode {
   y: number;
   label: string;
   highlight?: boolean;
+  /** Drawn as a dashed outline — e.g. a commit that no longer exists on any branch. */
+  ghost?: boolean;
 }
 
 export interface GraphEdgeSpec {
   from: string;
   to: string;
+  dashed?: boolean;
 }
 
 export interface RefLabel {
@@ -21,12 +24,20 @@ interface CommitGraphProps {
   nodes: GraphNode[];
   edges: GraphEdgeSpec[];
   refs?: RefLabel[];
+  /** Short title shown under the graph, e.g. to tell two side-by-side diagrams apart. */
+  caption?: string;
 }
 
-export function CommitGraph({ nodes, edges, refs = [] }: CommitGraphProps) {
+export function CommitGraph({ nodes, edges, refs = [], caption }: CommitGraphProps) {
   const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
+  const height = caption ? 185 : 160;
   return (
-    <svg viewBox="0 0 320 160" className="w-full max-w-sm mx-auto" role="img" aria-label="Git commit graph">
+    <svg
+      viewBox={`0 0 320 ${height}`}
+      className="w-full max-w-sm mx-auto"
+      role="img"
+      aria-label={caption ? `Git commit graph: ${caption}` : "Git commit graph"}
+    >
       {edges.map((e) => {
         const from = byId[e.from];
         const to = byId[e.to];
@@ -39,17 +50,29 @@ export function CommitGraph({ nodes, edges, refs = [] }: CommitGraphProps) {
             y2={to.y}
             className="stroke-muted-foreground"
             strokeWidth={2}
+            strokeDasharray={e.dashed ? "4 3" : undefined}
           />
         );
       })}
       {nodes.map((n) => (
         <g key={n.id}>
-          <circle
-            cx={n.x}
-            cy={n.y}
-            r={14}
-            className={n.highlight ? "fill-primary" : "fill-muted-foreground/40"}
-          />
+          {n.ghost ? (
+            <circle
+              cx={n.x}
+              cy={n.y}
+              r={14}
+              className="fill-background stroke-muted-foreground"
+              strokeWidth={2}
+              strokeDasharray="4 3"
+            />
+          ) : (
+            <circle
+              cx={n.x}
+              cy={n.y}
+              r={14}
+              className={n.highlight ? "fill-primary" : "fill-muted-foreground/40"}
+            />
+          )}
           <text x={n.x} y={n.y + 28} textAnchor="middle" className="fill-foreground text-[10px]">
             {n.label}
           </text>
@@ -69,6 +92,11 @@ export function CommitGraph({ nodes, edges, refs = [] }: CommitGraphProps) {
           </text>
         );
       })}
+      {caption && (
+        <text x={160} y={175} textAnchor="middle" className="fill-muted-foreground text-[10px]">
+          {caption}
+        </text>
+      )}
     </svg>
   );
 }

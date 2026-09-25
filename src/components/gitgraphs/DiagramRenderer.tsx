@@ -60,17 +60,21 @@ export function DiagramRenderer({ kind }: { kind: DiagramKind }) {
             { id: "f", x: 220, y: 80, label: "F", highlight: true },
           ]}
           edges={[{ from: "a", to: "b" }, { from: "b", to: "f" }]}
-          refs={[{ nodeId: "f", text: "main (moved)" }]}
+          refs={[
+            { nodeId: "f", text: "main (moved)" },
+            { nodeId: "f", text: "feature", dy: -13 },
+          ]}
+          caption="Fast-forward: main just moves up to F"
         />
       );
     case "mergeThreeWay":
       return (
         <CommitGraph
           nodes={[
-            { id: "a", x: 60, y: 80, label: "A" },
-            { id: "b", x: 130, y: 50, label: "B" },
-            { id: "f", x: 130, y: 110, label: "F" },
-            { id: "m", x: 220, y: 80, label: "M", highlight: true },
+            { id: "a", x: 60, y: 85, label: "A" },
+            { id: "b", x: 140, y: 45, label: "B" },
+            { id: "f", x: 140, y: 125, label: "F" },
+            { id: "m", x: 230, y: 85, label: "M", highlight: true },
           ]}
           edges={[
             { from: "a", to: "b" },
@@ -78,7 +82,11 @@ export function DiagramRenderer({ kind }: { kind: DiagramKind }) {
             { from: "b", to: "m" },
             { from: "f", to: "m" },
           ]}
-          refs={[{ nodeId: "m", text: "main" }]}
+          refs={[
+            { nodeId: "m", text: "main" },
+            { nodeId: "f", text: "feature" },
+          ]}
+          caption="Three-way: new merge commit M has two parents"
         />
       );
     case "remoteClone":
@@ -91,12 +99,21 @@ export function DiagramRenderer({ kind }: { kind: DiagramKind }) {
       return (
         <CommitGraph
           nodes={[
-            { id: "a", x: 60, y: 80, label: "A" },
-            { id: "b", x: 140, y: 80, label: "B" },
-            { id: "f", x: 220, y: 80, label: "F'", highlight: true },
+            { id: "a", x: 60, y: 110, label: "A" },
+            { id: "b", x: 150, y: 110, label: "B" },
+            { id: "f", x: 150, y: 40, label: "F (old)", ghost: true },
+            { id: "f2", x: 240, y: 110, label: "F'", highlight: true },
           ]}
-          edges={[{ from: "a", to: "b" }, { from: "b", to: "f" }]}
-          refs={[{ nodeId: "b", text: "main" }, { nodeId: "f", text: "feature" }]}
+          edges={[
+            { from: "a", to: "b" },
+            { from: "a", to: "f", dashed: true },
+            { from: "b", to: "f2" },
+          ]}
+          refs={[
+            { nodeId: "b", text: "main" },
+            { nodeId: "f2", text: "feature" },
+          ]}
+          caption="F is replayed on top of B as F' (a new commit)"
         />
       );
     case "stash":

@@ -73,7 +73,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
       <p className="text-sm text-muted-foreground">
         Question {index + 1} of {questions.length}
       </p>
-      <p className="font-medium">{question.question}</p>
+      <p className="font-medium">{renderWithInlineCode(question.question)}</p>
       <RadioGroup
         value={String(selected ?? "")}
         onValueChange={(v) => !submitted && setSelected(Number(v))}
@@ -81,7 +81,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
         {optionOrders[index].map((i) => (
           <div key={question.options[i]} className="flex items-center space-x-2">
             <RadioGroupItem value={String(i)} id={`option-${i}`} disabled={submitted} />
-            <Label htmlFor={`option-${i}`}>{question.options[i]}</Label>
+            <Label htmlFor={`option-${i}`}>{renderWithInlineCode(question.options[i])}</Label>
           </div>
         ))}
       </RadioGroup>

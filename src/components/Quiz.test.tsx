@@ -106,4 +106,21 @@ describe("Quiz", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
     expect(screen.getByText("Correct!")).toBeInTheDocument();
   });
+
+  it("renders backtick-delimited inline code in the question and options as <code>, not literal backticks", () => {
+    render(
+      <Quiz
+        questions={[
+          { question: "What does `git init` do?", options: ["`git stash pop`", "plain"], correctIndex: 0, explanation: "x" },
+        ]}
+        onComplete={vi.fn()}
+      />,
+    );
+
+    const quiz = screen.getByTestId("quiz");
+    expect(quiz.textContent).not.toContain("`");
+    expect(screen.getByText("git init").tagName).toBe("CODE");
+    expect(screen.getByText("git stash pop").tagName).toBe("CODE");
+    expect(screen.getByRole("radio", { name: "git stash pop" })).toBeInTheDocument();
+  });
 });

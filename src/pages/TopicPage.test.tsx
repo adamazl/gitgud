@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { TopicPage } from "./TopicPage";
@@ -39,14 +39,11 @@ describe("TopicPage", () => {
   it("renders inline-code markdown in the explanation as <code> elements, not literal backticks", () => {
     renderTopicPage();
 
-    const code = screen.getByText("git init", { selector: "code" });
-    expect(code).toBeInTheDocument();
-
-    const heading = screen.getByRole("heading", { name: "git init" });
-    // Scope the "no literal backticks" check to the explanation section
-    // (the heading's parent), since the quiz question text is out of scope
-    // for this fix.
-    expect(heading.parentElement?.textContent).not.toContain("`");
+    // Scope to the explanation section (the heading's parent); the quiz
+    // question also renders `git init` as code.
+    const explanation = screen.getByRole("heading", { name: "git init" }).parentElement!;
+    expect(within(explanation).getByText("git init", { selector: "code" })).toBeInTheDocument();
+    expect(explanation.textContent).not.toContain("`");
   });
 
   it("calls onQuizComplete with the topic id and score once the quiz is finished", async () => {
