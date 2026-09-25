@@ -92,21 +92,21 @@ export const topics: Topic[] = [
     id: "commit",
     tier: "beginner",
     title: "git commit",
-    summary: "Save a permanent snapshot of your staged changes.",
+    summary: "Save a snapshot of your staged project to its history.",
     explanation:
-      "`git commit` takes everything in the staging area and saves it as a permanent, timestamped snapshot in your project's history, along with a message describing what changed.\n\nEach commit points back to its parent commit, forming a chain — that chain is what lets Git show you history, compare versions, and undo mistakes.",
+      "`git commit` takes everything in the staging area — every tracked file, not just the ones you changed — and saves it as a timestamped snapshot in your project's history, along with a message describing what changed.\n\nEach commit points back to its parent commit, forming a chain — that chain is what lets Git show you history, compare versions, and undo mistakes.",
     diagrams: ["commit"],
     quiz: [
       {
         question: "What does a commit capture?",
         options: [
-          "A snapshot of the currently staged changes, with a message",
+          "A snapshot of every tracked file as staged, with a message",
           "Every file that has ever existed in the project",
           "Only the files that changed since the last push",
           "A copy of the remote repository",
         ],
         correctIndex: 0,
-        explanation: "A commit is a snapshot of what was staged at that moment, not a full rewrite of history.",
+        explanation: "A commit stores the full staged state of your project, not just a list of changes — Git works out diffs by comparing snapshots.",
       },
       {
         question: "Why does each commit reference a parent commit?",
@@ -160,7 +160,7 @@ export const topics: Topic[] = [
     title: "git checkout",
     summary: "Switch which branch (or commit) you're working on.",
     explanation:
-      "`git checkout <branch>` moves `HEAD` — Git's pointer to \"where you currently are\" — to a different branch, and updates your working directory to match that branch's files.\n\nCombine it with `-b` (`git checkout -b feature`) to create a new branch and switch to it in one step.",
+      "`git checkout <branch>` moves `HEAD` — Git's pointer to \"where you currently are\" — to a different branch, and updates your working directory to match that branch's files.\n\nCombine it with `-b` (`git checkout -b feature`) to create a new branch and switch to it in one step.\n\nNewer Git (2.23+) also has `git switch`, which does just the branch-switching part: `git switch feature`, or `git switch -c feature` to create one.",
     diagrams: ["checkout"],
     quiz: [
       {
@@ -292,7 +292,7 @@ export const topics: Topic[] = [
     title: "git pull",
     summary: "Download and merge changes from a remote repository.",
     explanation:
-      "`git pull` fetches new commits from the remote repository and merges them into your current branch in one step — it's essentially `git fetch` followed by `git merge`.\n\nRunning `git pull` regularly keeps your local branch up to date with your teammates' work and reduces the chance of a painful, large merge conflict later.",
+      "`git pull` fetches new commits from the remote repository and merges them into your current branch in one step — it's essentially `git fetch` followed by `git merge`.\n\nIf both you and the remote have new commits, newer Git will stop and ask you to choose: run `git pull --no-rebase` to merge (or `--rebase` to rebase).\n\nRunning `git pull` regularly keeps your local branch up to date with your teammates' work and reduces the chance of a painful, large merge conflict later.",
     diagrams: ["remotePull"],
     quiz: [
       {
@@ -304,7 +304,7 @@ export const topics: Topic[] = [
           "Adding and pushing",
         ],
         correctIndex: 0,
-        explanation: "`git pull` = `git fetch` + `git merge` in one command.",
+        explanation: "`git pull` = `git fetch` + combining the new commits into your branch (a merge, unless you pick rebase).",
       },
       {
         question: "Why pull regularly instead of only right before pushing?",
@@ -326,7 +326,7 @@ export const topics: Topic[] = [
     title: "git stash",
     summary: "Set aside uncommitted changes temporarily without committing them.",
     explanation:
-      "Sometimes you need to switch branches or pull in teammates' work, but your working directory is mid-edit and not ready for a commit. `git stash` shelves those uncommitted changes onto a stack and gives you a clean working directory again.\n\nWhen you're ready to pick the work back up, `git stash pop` reapplies the most recent stash and removes it from the stack. Nothing is lost — it's just parked out of the way.",
+      "Sometimes you need to switch branches or pull in teammates' work, but your working directory is mid-edit and not ready for a commit. `git stash` shelves those uncommitted changes onto a stack and gives you a clean working directory again. Brand-new files Git isn't tracking yet stay put unless you use `git stash -u`.\n\nWhen you're ready to pick the work back up, `git stash pop` reapplies the most recent stash and removes it from the stack. Nothing is lost — it's just parked out of the way.",
     diagrams: ["stash"],
     quiz: [
       {
@@ -338,7 +338,7 @@ export const topics: Topic[] = [
           "Pushes them to the remote",
         ],
         correctIndex: 0,
-        explanation: "Stashing sets changes aside without committing or discarding them.",
+        explanation: "Stashing sets changes to tracked files aside without committing or discarding them (add `-u` to include new, untracked files).",
       },
       {
         question: "How do you bring back the most recently stashed changes?",
