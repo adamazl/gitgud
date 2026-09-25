@@ -274,11 +274,11 @@ export const topics: Topic[] = [
         explanation: "Push moves commits from your machine up to the shared remote.",
       },
       {
-        question: "Why might `git push` be rejected?",
+        question: "Why might `git push` be rejected with a message telling you to fetch first?",
         options: [
           "The remote has commits you don't have locally yet",
-          "You haven't run git init",
-          "Your files are too large",
+          "Your commit messages are too short",
+          "You have uncommitted changes in your working directory",
           "You're on the wrong operating system",
         ],
         correctIndex: 0,
